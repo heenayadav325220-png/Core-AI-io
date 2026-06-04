@@ -1,8 +1,11 @@
 // ==========================================================================
-// 1. CONFIGURATION & CORE AI APIS (Vercel Route Sync)
+// 1. CONFIGURATION & DIRECT GEMINI API INTEGRATION
 // ==========================================================================
 const CONFIG = {
-    modelName: "Gemini 1.5 Flash"
+    // ⚠️ रोहित भाई, यहाँ अपनी असली जेमिनी API की (AQ.Ab8RN6K7HFjKbdKBp6bc-Ec5uFRJvf2_39K-n16PbBRTlCN9yA) पेस्ट कर दे
+    apiKey: "YOUR_ACTUAL_GEMINI_API_KEY", 
+    apiUrl: "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent"
+  value(GEMINI,KEY)
 };
 
 // ==========================================================================
@@ -31,7 +34,7 @@ const themeButtons = document.querySelectorAll('.theme-btn');
 let isFirstMessage = true;
 
 // ==========================================================================
-// 3. CORE CHAT LOGIC & GEMINI INTEGRATION
+// 3. CORE CHAT LOGIC
 // ==========================================================================
 
 // Monitor input to enable/disable Send Button
@@ -58,12 +61,9 @@ async function handleSendMessage() {
 
     if (isFirstMessage) {
         isFirstMessage = false;
-        
-        // 1. Logo Starts to Shine/Glow
         coreLogo.classList.add('shine');
         
         setTimeout(() => {
-            // 2. Logo disappears smoothly, Messages area reveals
             centerLogoContainer.classList.add('hidden');
             messagesContainer.classList.remove('hidden');
             
@@ -93,6 +93,7 @@ function renderMessage(text, sender) {
     messageDiv.style.maxWidth = '85%';
     messageDiv.style.fontSize = '0.95rem';
     messageDiv.style.lineHeight = '1.4';
+    messageDiv.style.margin = '6px 0';
     
     if (sender === 'user') {
         messageDiv.style.alignSelf = 'flex-end';
@@ -107,14 +108,10 @@ function renderMessage(text, sender) {
     
     messageDiv.innerText = text;
     messagesContainer.appendChild(messageDiv);
-    
-    chatScreen.scrollTo({
-        top: chatScreen.scrollHeight,
-        behavior: 'smooth'
-    });
+    chatScreen.scrollTo({ top: chatScreen.scrollHeight, behavior: 'smooth' });
 }
 
-// 🛠️ [यहाँ सुधारा गया है] - यह आपके Vercel /api/chat सर्वरलेस फ़ंक्शन से कनेक्ट होगा
+// डायरेक्ट जेमिनी कॉल (अब कोई पुराना मैसेज नहीं दिखेगा, सीधे असली रिस्पॉन्स आएगा)
 async function fetchGeminiResponse(prompt) {
     const loadingDiv = document.createElement('div');
     loadingDiv.innerText = "Core is typing...";
@@ -125,27 +122,26 @@ async function fetchGeminiResponse(prompt) {
     chatScreen.scrollTo({ top: chatScreen.scrollHeight, behavior: 'smooth' });
 
     try {
-        const response = await fetch('/api/chat', {
+        const response = await fetch(`${CONFIG.apiUrl}?key=${CONFIG.CONFIG_apiKey || CONFIG.apiKey}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ prompt: prompt })
+            body: JSON.stringify({
+                contents: [{ parts: [{ text: prompt }] }]
+            })
         });
 
         const data = await response.json();
         if (loadingDiv.parentNode) messagesContainer.removeChild(loadingDiv);
 
-        // गूगल जेमिनी के सही डेटा स्ट्रक्चर को रीड करना
         if (data.candidates && data.candidates[0].content.parts[0].text) {
-            const reply = data.candidates[0].content.parts[0].text;
-            renderMessage(reply, 'core');
+            renderMessage(data.candidates[0].content.parts[0].text, 'core');
         } else {
-            renderMessage("Error: Authentication Failed. Check if GEMINI_KEY is set properly in Vercel rohit", 'core');
-            console.error("Vercel Response Log:", data);
+            // यहाँ अब असली एरर दिखेगा जो गूगल भेजेगा
+            renderMessage("Google API Error: " + JSON.stringify(data), 'core');
         }
     } catch (error) {
         if (loadingDiv.parentNode) messagesContainer.removeChild(loadingDiv);
-        renderMessage("Connection error. Vercel backend function is unreachable.", 'core');
-        console.error("Fetch Error:", error);
+        renderMessage("Network Error: " + error.message, 'core');
     }
 }
 
@@ -157,37 +153,26 @@ closeNavBtn.addEventListener('click', () => navSlider.classList.remove('open'));
 
 settingsBtn.addEventListener('click', () => infoModal.classList.add('open'));
 closeModalBtn.addEventListener('click', () => infoModal.classList.remove('open'));
-infoModal.addEventListener('click', (e) => {
-    if (e.target === infoModal) infoModal.classList.remove('open');
-});
+infoModal.addEventListener('click', (e) => { if (e.target === infoModal) infoModal.classList.remove('open'); });
 
 shareFilesBtn.addEventListener('click', () => fileInput.click());
 fileInput.addEventListener('change', () => {
-    if (fileInput.files.length > 0) {
-        alert(`${fileInput.files.length} Files Selected for upload to Core AI.`);
-    }
+    if (fileInput.files.length > 0) alert(`${fileInput.files.length} Files Selected.`);
 });
 
 micBtn.addEventListener('click', () => {
     micBtn.style.color = 'var(--accent-color)';
-    alert("Microphone integration ready. Listening state triggered...");
+    alert("Microphone integration ready...");
     setTimeout(() => { micBtn.style.color = 'var(--text-secondary)'; }, 2000);
 });
 
-// ==========================================================================
-// 5. SMART MULTI-THEME SWITCHING CONTROLLER
-// ==========================================================================
+// Theme Switching
 themeButtons.forEach(button => {
     button.addEventListener('click', () => {
         document.querySelector('.theme-btn.active').classList.remove('active');
         button.classList.add('active');
-
         const targetTheme = button.getAttribute('data-theme');
         document.body.classList.remove('dark-mode', 'glass-mode', 'neon-mode', 'cyber-mode');
-        
-        if (targetTheme === 'dark') document.body.classList.add('dark-mode');
-        if (targetTheme === 'glass') document.body.classList.add('glass-mode');
-        if (targetTheme === 'neon') document.body.classList.add('neon-mode');
-        if (targetTheme === 'cyber') document.body.classList.add('cyber-mode');
+        document.body.classList.add(`${targetTheme}-mode`);
     });
 });
