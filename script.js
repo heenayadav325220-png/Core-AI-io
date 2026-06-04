@@ -1,15 +1,9 @@
 // ==========================================================================
-// 1. CONFIGURATION & CORE AI APIS (Vercel Environment Setup)
+// 1. CONFIGURATION & CORE AI APIS (Vercel Backend Routing)
 // ==========================================================================
-// Note: Vercel environment variables work on server-side. For a pure static frontend deployment,
-// Vercel injects processed variables or you fetch via an API route. 
-// Here is the direct Gemini API orchestration integration based on your blueprint instructions.
 const CONFIG = {
-    // Variable Name => GEMINI_KEY set from environment variables
-    apiKey: typeof process !== 'undefined' ? process.env.GEMINI_KEY : "", 
-    // Model Name => Gemini 1.5 Flash
-    modelName: "Gemini 1.5 Flash",
-    apiUrl: "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent"
+    modelName: "Gemini 1.5 Flash"
+    // यहाँ अब सीधे API Key और गूगल का URL रखने की ज़रूरत नहीं है, क्योंकि रिक्वेस्ट अब तेरे सर्वर रूट पर जाएगी।
 };
 
 // ==========================================================================
@@ -135,7 +129,7 @@ function renderMessage(text, sender) {
     });
 }
 
-// REST Client for Core AI - Gemini Inference Engine 
+// REST Client for Core AI - Vercel Serverless Connection
 async function fetchGeminiResponse(prompt) {
     // Temporary Loading State Placeholder
     const loadingDiv = document.createElement('div');
@@ -146,27 +140,27 @@ async function fetchGeminiResponse(prompt) {
     messagesContainer.appendChild(loadingDiv);
 
     try {
-        const response = await fetch(`${CONFIG.apiUrl}?key=${CONFIG.apiKey}`, {
+        // [यहाँ बदलाव किया गया है] - यह अब सीधे वेंसल के बैकएंड रूट को कॉल करेगा
+        const response = await fetch('/api/chat', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                contents: [{ parts: [{ text: prompt }] }]
-            })
+            body: JSON.stringify({ prompt: prompt })
         });
 
         const data = await response.json();
-        messagesContainer.removeChild(loadingDiv);
+        if (loadingDiv.parentNode) messagesContainer.removeChild(loadingDiv);
 
         if (data.candidates && data.candidates[0].content.parts[0].text) {
             const reply = data.candidates[0].content.parts[0].text;
             renderMessage(reply, 'core');
         } else {
             renderMessage("Error: Token verification or Key authentication failed.", 'core');
+            console.error("API Error Details:", data);
         }
     } catch (error) {
         if (loadingDiv.parentNode) messagesContainer.removeChild(loadingDiv);
         renderMessage("Connection error. Ensure Vercel system-environment variables are online.", 'core');
-        console.error("Gemini Failure:", error);
+        console.error("Vercel Route Failure:", error);
     }
 }
 
@@ -190,7 +184,6 @@ shareFilesBtn.addEventListener('click', () => fileInput.click());
 fileInput.addEventListener('change', () => {
     if (fileInput.files.length > 0) {
         alert(`${fileInput.files.length} Files Selected for upload to Core AI.`);
-        // Note: Ready for file data parsing or base64 injection pipeline for multimodal processing
     }
 });
 
@@ -223,3 +216,4 @@ themeButtons.forEach(button => {
         if (targetTheme === 'cyber') document.body.classList.add('cyber-mode');
     });
 });
+        
