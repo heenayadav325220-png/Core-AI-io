@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Core AI</title>
+    <!-- Google Fonts for Clean Look -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS Link -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="dark-mode"> <!-- Default Theme is Dark Mode -->
+
+    <!-- 1. FULL-SCREEN NAVIGATION SLIDER -->
+    <div id="navSlider" class="nav-slider">
+        <button id="closeNavBtn" class="close-btn"><i class="fa-solid fa-xmark"></i></button>
+        
+        <div class="slider-content">
+            <!-- Chat History Section -->
+            <div class="slider-section">
+                <h3><i class="fa-solid fa-arrow-down-a-z"></i> Chat History</h3>
+                <div class="history-list">
+                    <!-- History items will be injected by JavaScript -->
+                    <p class="empty-history">No recent chats</p>
+                </div>
+            </div>
+
+            <!-- Themes Mode Section (4 Themes) -->
+            <div class="slider-section">
+                <h3><i class="fa-solid fa-palette"></i> Themes Mode</h3>
+                <div class="theme-options">
+                    <button class="theme-btn active" data-theme="dark">Dark Mode</button>
+                    <button class="theme-btn" data-theme="glass">Glassmorphism</button>
+                    <button class="theme-btn" data-theme="neon">Neon Mode</button>
+                    <button class="theme-btn" data-theme="cyber">Cyber Theme</button>
+                </div>
+            </div>
+
+            <!-- Language Option Section (Total 5 Languages Placeholder) -->
+            <div class="slider-section">
+                <h3><i class="fa-solid fa-language"></i> Language</h3>
+                <select id="languageSelect" class="lang-select">
+                    <option value="en">English</option>
+                    <option value="hi">हिन्दी (Hindi)</option>
+                    <option value="es">Español</option>
+                    <option value="fr">Français</option>
+                    <option value="ar">العربية</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. DEVELOPER INFO MODAL (ABOUT APP) -->
+    <div id="infoModal" class="modal">
+        <div class="modal-content">
+            <button id="closeModalBtn" class="close-modal-btn"><i class="fa-solid fa-xmark"></i></button>
+            <h2>About Developer</h2>
+            <div class="dev-details">
+                <p><strong>App Name:</strong> Core AI</p>
+                <p><strong>Name:</strong> Rohit Yadav</p>
+                <p><strong>Number:</strong> 7073282818</p>
+                <p><strong>Instagram:</strong> <a href="https://instagram.com/Rohit.yadav.14" target="_blank">Rohit.yadav.14</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN APP CONTAINER -->
+    <div class="app-container">
+        
+        <!-- TOP BAR (HEADER) -->
+        <header class="top-bar">
+            <!-- Menu Grid Button to open Full-Screen Slider -->
+            <button id="menuBtn" class="icon-btn"><i class="fa-solid fa-bars-staggered"></i></button>
+            <h1 class="app-title">Ask Core.</h1>
+            <!-- Settings Icon to open Developer/App Info -->
+            <button id="settingsBtn" class="icon-btn"><i class="fa-solid fa-gear"></i></button>
+        </header>
+
+        <!-- CHAT SCREEN / AREA -->
+        <main class="chat-screen" id="chatScreen">
+            
+            <!-- CENTRAL CORE AI LOGO (Always in Center at start) -->
+            <div id="centerLogoContainer" class="center-logo-container">
+                <div class="core-logo" id="coreLogo">
+                    <!-- Your customized H-shape-like brand logo structure -->
+                    <div class="logo-shape">mathcal{H}</div>
+                </div>
+                <h2>Core AI</h2>
+            </div>
+
+            <!-- CHAT MESSAGES CONTAINER (Hidden at start, visible when conversation begins) -->
+            <div id="messagesContainer" class="messages-container hidden">
+                <!-- Dynamic messages will be added here via JS -->
+            </div>
+
+        </main>
+
+        <!-- BOTTOM BAR (FOOTER / INPUT AREA) -->
+        <footer class="bottom-bar">
+            <div class="input-container">
+                <!-- Hidden inputs for file upload -->
+                <input type="file" id="fileInput" class="hidden-input" multiple accept="image/*">
+                
+                <!-- Share Files Button (+) -->
+                <button id="shareFilesBtn" class="input-action-btn" title="Share Photos/Files">
+                    <i class="fa-solid fa-plus"></i>
+                </button>
+                
+                <!-- Text Area Input -->
+                <textarea id="userInput" placeholder="Ask Core AI..." rows="1"></textarea>
+                
+                <!-- Microphone Button -->
+                <button id="micBtn" class="input-action-btn" title="Voice Input">
+                    <i class="fa-solid fa-microphone"></i>
+                </button>
+                
+                <!-- Send Button (Up Arrow ⬆️) -->
+                <button id="sendBtn" class="send-btn" title="Send Message" disabled>
+                    <i class="fa-solid fa-arrow-up"></i>
+                </button>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- Custom JS Link -->
+    <script src="script.js"></script>
+</body>
+</html>
