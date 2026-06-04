@@ -139,7 +139,7 @@ async function fetchGeminiResponse(prompt) {
             const reply = data.candidates[0].content.parts[0].text;
             renderMessage(reply, 'core');
         } else {
-            renderMessage("Error: Authentication Failed. Check if GEMINI_KEY is set properly in Vercel settings.", 'core');
+            renderMessage("Error: Authentication Failed. Check if GEMINI_KEY is set properly in Vercel rohit", 'core');
             console.error("Vercel Response Log:", data);
         }
     } catch (error) {
